@@ -5,17 +5,22 @@
     </h1>
   </div>
   <div>
-      Anonymous IJCAI 2024 Submission &emsp; Paper ID 291
+      Kanglei Zhou &emsp; 
+      <a href='https://github.com/aoxipo'>Junlin Li</a> &emsp; 
+      <a href='https://github.com/Craaaaazy666'>Ruizhi Cai</a> &emsp;
+      <a href='https://lywang3081.github.io/'>Liyuan Wang</a> &emsp; 
+      <a href='https://indussky8.github.io/'>Xingxing Zhang</a> &emsp; 
+      <a href='https://orcid.org/0000-0001-6351-2538'>Xiaohui Liang</a>
   </div>
   <br/>
 </div>
 
 
-CoFInAl is the implementation for Action Quality Assessment (AQA) based on the paper "CoFInAl: Enhancing Action Quality Assessment with Coarse-to-Fine Instruction Alignment."
+CoFInAl is the implementation for Action Quality Assessment (AQA) based on the paper "CoFInAl: Enhancing Action Quality Assessment with Coarse-to-Fine Instruction Alignment", which has been accepted by IJCAI 2024.
 
 ## Framework
 
-![Overview](overview.png)
+![Overview](figs/overview.png)
 
 CoFInAl addresses challenges related to domain shift and overfitting, common issues in AQA performance. To this end, CoFInAl strategically aligns AQA objectives with broader tasks through a coarse-to-fine classification strategy. Inspired by the two-step assessment process used by judges, CoFInAl first identifies a coarse grade and then discerns variations within each grade, mirroring the human judgment process.
 
