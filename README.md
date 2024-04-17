@@ -64,7 +64,7 @@ To get started, you will need to first clone this project and then install the r
 \- RTX3090
 \- CUDA: 11.1
 \- Python: 3.8+
-\- PyTorch: 1.10.1+cu111
+\- PyTorch: 1.10.1 + cu111
 
 ### Basic packages
 
