@@ -22,7 +22,7 @@ CoFInAl is the implementation for Action Quality Assessment (AQA) based on the p
 
 ![Overview](figs/overview.png)
 
-CoFInAl addresses challenges related to domain shift and overfitting, key issues in AQA. To this end, CoFInAl strategically aligns AQA objectives with broader tasks through a coarse-to-fine classification strategy. Inspired by the two-step assessment process used by judges, CoFInAl first identifies a coarse grade and then discerns variations within each grade,  enhancing interpretability within the AQA framework.
+CoFInAl aims to address challenges related to domain shift and overfitting, key issues in AQA. To this end, CoFInAl strategically aligns AQA objectives with broader tasks through a coarse-to-fine classification strategy. Inspired by the two-step assessment process used by judges, CoFInAl first identifies a coarse grade and then discerns variations within each grade,  enhancing interpretability within the AQA framework.
 
 ## Datasets
 
