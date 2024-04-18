@@ -89,7 +89,7 @@ CUDA_VISIBLE_DEVICES={device ID} python main.py \
     --submodel-name ${sub_model_name} \
     --action-type Ball/{action type of RG or TES/PCS} \
     --lr 1e-2 --epoch 500 \
-    --n_encoder 2 --n_decoder 4 --n_query 4 --alpha 0.5 --margin 1 --lr-decay cos --decay-rate 1e-2 --dropout 0.3\
+    --n_encoder 2 --n_decoder 4 --n_query 4 --alpha 0.5 --margin 1 --lr-decay cos --decay-rate 1e-2 --dropout 0.3 \
     --loss_align 1 --activate_regular_restrictions 3
 ```
 
