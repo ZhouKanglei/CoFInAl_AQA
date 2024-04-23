@@ -111,6 +111,19 @@ CUDA_VISIBLE_DEVICES={device ID} python main.py --video-path {path}/swintx_avg_f
 
 For all hyper-parameters, see `scripts/test_all.sh`.
 
+## Citation
+
+Please cite this work if you find it useful:
+
+```latex
+@inproceedings{zhou2024cofinal,
+  title={CoFInAl: Enhancing Action Quality Assessment with Coarse-to-Fine Instruction Alignment},
+  author={Zhou, Kanglei and Li, Junlin and Cai, Ruizhi and Wang, Liyuan and Zhang, Xinxgxing and Liang Xiaohui},
+  booktitle={International Joint Conference on Artificial Intelligence (IJCAI)},
+  year={2024}
+}
+```
+
 ## Contact
 
 If you have any specific questions or if there's anything else you'd like assistance with regarding the code, feel free to let me know. 
