@@ -15,7 +15,6 @@
   <br/>
 </div>
 
-
 CoFInAl is the implementation for Action Quality Assessment (AQA) based on the paper "CoFInAl: Enhancing Action Quality Assessment with Coarse-to-Fine Instruction Alignment", which has been accepted by IJCAI 2024.
 
 ## Framework
