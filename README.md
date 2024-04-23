@@ -111,6 +111,6 @@ CUDA_VISIBLE_DEVICES={device ID} python main.py --video-path {path}/swintx_avg_f
 
 For all hyper-parameters, see `scripts/test_all.sh`.
 
-## Acknowledgements
+## Contact
 
-If you have any specific questions or if there's anything else you'd like assistance with regarding the code, feel free to let me know. Thanks for your examination!
+If you have any specific questions or if there's anything else you'd like assistance with regarding the code, feel free to let me know. 
