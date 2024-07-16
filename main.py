@@ -48,31 +48,18 @@ def get_scheduler(optim, args):
     return scheduler
 
 def build_model(args):
-    if args.submodel_name == "cofinal":
+    if args.submodel_name == "cofinal" or args.submodel_name == "cofinal_1":
         from models.model import cofinal as Model
         print("cofinal...")
         model = Model(args.in_dim, args.hidden_dim, args.n_head, args.n_encoder,
                        args.n_decoder, args.n_query, args.dropout, args.activate_regular_restrictions)
-    if args.submodel_name == "GDLTETH2":
-        from models.model import GDLTETH2 as Model
-        print("GDLTETH2...")
+    
+    if args.submodel_name == "cofinal_2":
+        from models.model import cofinal_2 as Model
+        print("cofinal_2...")
         model = Model(args.in_dim, args.hidden_dim, args.n_head, args.n_encoder,
                        args.n_decoder, args.n_query, args.dropout, args.activate_regular_restrictions)
-    # if args.submodel_name == "HGCN":
-    #     from models.HGCN import hgcn as Model
-    #     print("hgcn...")
-    #     model = Model(args.in_dim, 1, num_groups=2,  num_clips=68)
-    # if args.submodel_name == "GDLT":
-    #     from models.model import GDLT as Model
-    #     print("GDLT...")
-    #     model = Model(args.in_dim, args.hidden_dim, args.n_head, args.n_encoder,
-    #                    args.n_decoder, args.n_query, args.dropout)
-    # if "GDLTETH_ab" in args.submodel_name:
-    #     from models.model import GDLTETH_ab as Model
-    #     print("GDLTETH_ab...")
-    #     model = Model(args.in_dim, args.hidden_dim, args.n_head, args.n_encoder,
-    #                    args.n_decoder, args.n_query, args.dropout, args.activate_regular_restrictions, args.ab)
-        
+
     return model
 
 if __name__ == '__main__':
@@ -81,27 +68,32 @@ if __name__ == '__main__':
     args = options.parser.parse_args()
     setup_seed(0)
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    print(device)   
+    print('device: ', device)   
     keep = False
     if args.ab != 0:
         keep = True
         args.submodel_name = args.submodel_name + "_" + str(args.ab)
+    
+    if args.model_name in ['Ball', 'Clubs', 'Hoop' , 'Ribbon']:
+        dataset = 'RG'
+    else:
+        dataset = 'fis-v'
         
-    save_path = "./temp_log/"
+    dataset += '/I3D' if args.in_dim == 2048 else '/VST'
+        
+    save_path = f"./temp_log/{dataset}/"
     if not os.path.exists(save_path + args.submodel_name):
         os.makedirs(save_path + args.submodel_name)
 
-    
-
     name = args.submodel_name
-    
-    if "ETH" in name or name in ['cofinal']:
+    if 'cofinal' in name:
         use_etf = True
     else:
         use_etf = False
 
-    logger =Logger( 
-        file_name = save_path + f"/{args.submodel_name}/log_{name}_{args.action_type}.txt", 
+    phase = 'test' if args.test else 'train'
+    logger = Logger( 
+        file_name = save_path + f"/{args.submodel_name}/{phase}_log-{name}-{args.action_type}.txt", 
         file_mode = "w+", 
         should_flush = True
     )
@@ -115,9 +107,6 @@ if __name__ == '__main__':
                            action_type=args.action_type)
     print(len(train_data))
     train_loader = DataLoader(train_data, batch_size=args.batch, shuffle=True, num_workers=8)
-    
-    # print(train_data.get_score_mean(), train_data.get_score_std())
-    # raise SystemExit
 
     '''
     test data
@@ -135,7 +124,7 @@ if __name__ == '__main__':
     train_fn = train.train_epoch
     if args.ckpt is not None:
         path = args.ckpt
-        print( "load param:", path )
+        print( "load param:", path)
         checkpoint = torch.load(path)
         model.load_state_dict(checkpoint)
     print('=============Load model successfully=============')
@@ -146,12 +135,14 @@ if __name__ == '__main__':
     test mode
     '''
     if args.test:
-        print(model.weight)
-        test_loss, coef, preds, labels, feat = test_epoch(0, model, test_loader, None, device, args, use_etf, True, True, keep = keep)
-        print('Test Loss: {:.4f}\tTest Coef: {:.3f}'.format(test_loss, coef))
+        test_loss, coef, rl2, preds, labels, feat = \
+            test_epoch(0, model, test_loader, None, device, args, use_etf, True, True, keep=keep)
+        print('Test Loss: {:.4f}\tTest Coef: {:.3f}\tR-L2: {:.3f}'.format(test_loss, coef, rl2))
+        
         np.savez(save_path + f"{args.submodel_name}/{args.action_type}_{args.submodel_name}", 
-            pred = preds, gt = labels, q1 = feat[0], other=feat[1], in_feat=feat[2]
+            pred=preds, gt=labels, q1=feat[0], other=feat[1], in_feat=feat[2]
         )
+        
         raise SystemExit
 
     '''
@@ -162,7 +153,7 @@ if __name__ == '__main__':
     if not os.path.exists("./logs/" + args.model_name):
         os.makedirs("./logs/" + args.model_name)
     logger = SummaryWriter(os.path.join('./logs/', args.model_name))
-    best_coef, best_epoch = -1, -1
+    best_coef, best_rl2, best_epoch = -1, -1, -1
     final_train_loss, final_train_coef, final_test_loss, final_test_coef = 0, 0, 0, 0
 
     '''
@@ -185,7 +176,7 @@ if __name__ == '__main__':
             scheduler.step()
         test_loss, test_coef, test_rl2, preds, labels, feat = test_epoch(epc, model, test_loader, logger, device, args, use_etf, True, True, keep = keep)
         if test_coef > best_coef:
-            best_coef, best_epoch = test_coef, epc
+            best_coef, best_rl2, best_epoch = test_coef, test_rl2, epc
             torch.save(model.state_dict(), save_path + f"{args.submodel_name}/" + args.model_name + '_best.pkl')
             torch.save(model.state_dict(),  "./ckpt/" + args.model_name + '_best.pkl')
 
@@ -197,6 +188,8 @@ if __name__ == '__main__':
         if epc == args.epoch - 1:
             final_train_loss, final_train_coef, final_test_loss, final_test_coef = \
                 avg_loss, train_coef, test_loss, test_coef
+    
     torch.save(model.state_dict(), './ckpt/' + args.model_name + '.pkl')
-    print('Best Test Coef: {:.6f}\tBest Test Eopch: {}'.format(best_coef, best_epoch))
-   
+    print('Best Test Eopch: {}\t'
+          'Best Test Coef: {:.6f}\t'
+          'Best Test R-L2: {:.3f}'.format(best_epoch, best_coef, best_rl2))

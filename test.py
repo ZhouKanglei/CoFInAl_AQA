@@ -50,23 +50,22 @@ def test_epoch(epoch, model, test_loader, logger, device, args, etf_head = False
             else:
                 preds = np.concatenate((preds, pred.cpu().detach().numpy()), axis=0)
                 labels = np.concatenate((labels, label.cpu().detach().numpy()), axis=0)
-    # print(preds.shape, labels.shape, etf_head)
-    
+   
     avg_coef, _ = spearmanr(preds, labels)
-    # print("spearmanr", avg_coef, preds, labels)
     avg_loss = float(tol_loss) / float(tol_sample)
     pred_scores = preds.reshape(-1,)
     true_scores = labels.reshape(-1,)
     rl2 = 100 * np.power((pred_scores - true_scores) /
                        (true_scores.max() - true_scores.min()), 2).sum() / true_scores.shape[0]
+    
     if logger is not None:
         logger.add_scalar('Test coef', avg_coef, epoch)
         logger.add_scalar('Test loss', avg_loss, epoch)
         logger.add_scalar('Test rl2', rl2, epoch)
+    
     if return_result:
         if return_feat:
             return avg_loss, avg_coef, rl2, preds, labels, middle_feature
         return avg_loss, avg_coef, rl2, preds, labels
-    # print(preds.tolist())
-    # print(labels.tolist())
+    
     return avg_loss, avg_coef, rl2
